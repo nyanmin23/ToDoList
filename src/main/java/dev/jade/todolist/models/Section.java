@@ -2,12 +2,14 @@ package dev.jade.todolist.models;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.sql.Timestamp;
+import java.time.Instant;
 
 @Getter
 @Setter
+@NoArgsConstructor
 @Entity
 @Table(name = "sections")
 public class Section {
@@ -20,10 +22,10 @@ public class Section {
     private String sectionName;
 
     @Column(name = "created_at", nullable = false)
-    private Timestamp createdAt;
+    private Instant createdAt;
 
     @Column(name = "updated_at", nullable = false)
-    private Timestamp updatedAt;
+    private Instant updatedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)

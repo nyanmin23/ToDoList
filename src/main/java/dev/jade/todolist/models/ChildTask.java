@@ -1,9 +1,15 @@
 package dev.jade.todolist.models;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import java.sql.Timestamp;
+import java.time.Instant;
 
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity
 @Table(name = "child_tasks")
 public class ChildTask {
@@ -16,7 +22,7 @@ public class ChildTask {
     private String description;
 
     @Column(name = "deadline")
-    private Timestamp deadline;
+    private Instant deadline;
 
     @Column(name = "priority", nullable = false)
     private Priority priority;
@@ -25,10 +31,10 @@ public class ChildTask {
     private boolean isCompleted;
 
     @Column(name = "created_at", nullable = false)
-    private Timestamp createdAt;
+    private Instant createdAt;
 
     @Column(name = "updated_at", nullable = false)
-    private Timestamp updatedAt;
+    private Instant updatedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id", nullable = false)
