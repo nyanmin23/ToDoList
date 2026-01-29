@@ -9,6 +9,9 @@ import dev.jade.todolist.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class SectionService {
@@ -32,8 +35,30 @@ public class SectionService {
         return mapToSectionDTO(sectionRepository.save(section));
     }
 
+    public List<SectionDTO> getAllSectionsByUserId(Long userId) {
+        userRepository.findById(userId)
+                .orElseThrow(
+                        () -> new EntityNotFoundException("User not found")
+                );
+
+        return sectionRepository.findAllByUser_UserId(userId)
+                .stream()
+                .map(this::mapToSectionDTO)
+                .collect(Collectors.toList());
+    }
+
+    public SectionDTO getSectionById(Long sectionId) {
+        Section section = sectionRepository.findBySectionId(sectionId)
+                .orElseThrow(
+                        () -> new EntityNotFoundException("Section not found")
+                );
+
+        return mapToSectionDTO(section);
+    }
+
     private SectionDTO mapToSectionDTO(Section section) {
         SectionDTO sectionDTO = new SectionDTO();
+        sectionDTO.setSectionId(section.getSectionId());
         sectionDTO.setSectionName(section.getSectionName());
 
         return sectionDTO;
