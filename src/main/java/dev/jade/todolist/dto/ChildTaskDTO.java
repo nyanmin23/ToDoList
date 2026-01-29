@@ -1,6 +1,6 @@
 package dev.jade.todolist.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import dev.jade.todolist.models.Priority;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -8,21 +8,22 @@ import lombok.Setter;
 
 import java.time.Instant;
 
-@Setter
 @Getter
-public class UserDTO {
+@Setter
+public class ChildTaskDTO {
 
     @NotNull
     @NotEmpty
-    private String email;
+    private String description;
+
+    private Instant deadline;
 
     @NotNull
     @NotEmpty
-    private String username;
+    private Priority priority;
 
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private String password;
-
-    private Instant createdAt;
+    @NotNull
+    @NotEmpty
+    private boolean isCompleted;
 
 }
