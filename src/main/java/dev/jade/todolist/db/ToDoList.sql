@@ -64,8 +64,13 @@ $$ LANGUAGE plpgsql;
 DO
 $$
     BEGIN
-        DROP TRIGGER IF EXISTS update_sections_updated_at ON sections;
-        CREATE TRIGGER update_sections_updated_at
+        CREATE OR REPLACE TRIGGER update_users_updated_at
+            BEFORE UPDATE
+            ON users
+            FOR EACH ROW
+        EXECUTE FUNCTION update_updated_at_column();
+
+        CREATE OR REPLACE TRIGGER update_sections_updated_at
             BEFORE UPDATE
             ON sections
             FOR EACH ROW
