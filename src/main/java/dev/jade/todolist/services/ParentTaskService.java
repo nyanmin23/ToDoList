@@ -45,4 +45,21 @@ public class ParentTaskService {
         return parentTaskDTO;
     }
 
+    public ParentTaskDTO updateParentTask(
+            Long parentId,
+            ParentTaskDTO parentTaskDTO
+    ) {
+        ParentTask parentTask = parentTaskRepository.findById(parentId)
+                .orElseThrow(
+                        () -> new EntityNotFoundException("Parent task with id " + parentId + " not found")
+                );
+
+        parentTask.setDescription(parentTaskDTO.getDescription());
+        parentTask.setDeadline(parentTaskDTO.getDeadline());
+        parentTask.setPriority(parentTaskDTO.getPriority());
+        parentTask.setCompleted(parentTaskDTO.isCompleted());
+
+        return mapToParentTaskDTO(parentTaskRepository.save(parentTask));
+    }
+
 }

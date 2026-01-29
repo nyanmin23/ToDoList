@@ -46,4 +46,20 @@ public class ChildTaskService {
         return childTaskDTO;
     }
 
+    public ChildTaskDTO updateChildTask(
+            Long childId,
+            ChildTaskDTO childTaskDTO
+    ) {
+        ChildTask childTask = childTaskRepository.findById(childId)
+                .orElseThrow(
+                        () -> new EntityNotFoundException("Child task with id " + childId + " not found")
+                );
+        childTask.setDescription(childTaskDTO.getDescription());
+        childTask.setDeadline(childTaskDTO.getDeadline());
+        childTask.setPriority(childTaskDTO.getPriority());
+        childTask.setCompleted(childTaskDTO.isCompleted());
+
+        return mapToChildTaskDTO(childTaskRepository.save(childTask));
+    }
+
 }
