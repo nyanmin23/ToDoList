@@ -6,8 +6,6 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.Instant;
-
 @Setter
 @Getter
 public class UserDTO {
@@ -22,7 +20,4 @@ public class UserDTO {
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
-
-    private Instant createdAt;
-
 }

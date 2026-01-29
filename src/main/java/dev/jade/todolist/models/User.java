@@ -5,18 +5,16 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.Instant;
-
 @Getter
 @Setter
 @NoArgsConstructor
 @Entity
 @Table(name = "users")
-public class User {
+public class User extends AuditableEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long userId;
+    private Long userId;
 
     @Column(name = "username", length = 50, nullable = false)
     private String username;
@@ -26,8 +24,5 @@ public class User {
 
     @Column(name = "password", length = 128, nullable = false)
     private String password;
-
-    @Column(name = "created_at", nullable = false)
-    private Instant createdAt;
 
 }

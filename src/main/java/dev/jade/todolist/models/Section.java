@@ -12,7 +12,7 @@ import java.time.Instant;
 @NoArgsConstructor
 @Entity
 @Table(name = "sections")
-public class Section {
+public class Section extends AuditableEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

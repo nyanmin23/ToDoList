@@ -12,7 +12,7 @@ import java.time.Instant;
 @NoArgsConstructor
 @Entity
 @Table(name = "child_tasks")
-public class ChildTask {
+public class ChildTask extends AbstractTask {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,18 +23,6 @@ public class ChildTask {
 
     @Column(name = "deadline")
     private Instant deadline;
-
-    @Column(name = "priority", nullable = false)
-    private Priority priority;
-
-    @Column(name = "is_completed", nullable = false)
-    private boolean isCompleted;
-
-    @Column(name = "created_at", nullable = false)
-    private Instant createdAt;
-
-    @Column(name = "updated_at", nullable = false)
-    private Instant updatedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id", nullable = false)
