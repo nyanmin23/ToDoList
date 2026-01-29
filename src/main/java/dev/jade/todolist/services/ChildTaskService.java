@@ -9,6 +9,9 @@ import dev.jade.todolist.repositories.ParentTaskRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class ChildTaskService {
@@ -36,8 +39,30 @@ public class ChildTaskService {
         return mapToChildTaskDTO(childTaskRepository.save(childTask));
     }
 
+    public List<ChildTaskDTO> getAllChildTasksByParent(Long parentId) {
+        parentTaskRepository.findById(parentId)
+                .orElseThrow(
+                        () -> new EntityNotFoundException("Parent task with id " + parentId + " not found")
+                );
+
+        return childTaskRepository.findAllByParentTask_ParentId(parentId)
+                .stream()
+                .map(this::mapToChildTaskDTO)
+                .collect(Collectors.toList());
+    }
+
+    public ChildTaskDTO getChildTaskById(Long childId) {
+        ChildTask childTask = childTaskRepository.findById(childId)
+                .orElseThrow(
+                        () -> new EntityNotFoundException("Child task with id " + childId + " not found")
+                );
+
+        return mapToChildTaskDTO(childTask);
+    }
+
     private ChildTaskDTO mapToChildTaskDTO(ChildTask childTask) {
         ChildTaskDTO childTaskDTO = new ChildTaskDTO();
+        childTaskDTO.setChildId(childTask.getChildId());
         childTaskDTO.setDescription(childTask.getDescription());
         childTaskDTO.setDeadline(childTask.getDeadline());
         childTaskDTO.setPriority(childTask.getPriority());
