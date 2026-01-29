@@ -9,6 +9,9 @@ import dev.jade.todolist.repositories.SectionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class ParentTaskService {
@@ -35,8 +38,30 @@ public class ParentTaskService {
         return mapToParentTaskDTO(parentTaskRepository.save(parentTask));
     }
 
+    public List<ParentTaskDTO> getAllParentTasksBySection(Long sectionId) {
+        sectionRepository.findBySectionId(sectionId)
+                .orElseThrow(
+                        () -> new EntityNotFoundException("Section with id " + sectionId + " not found")
+                );
+
+        return parentTaskRepository.findAllBySection_SectionId(sectionId)
+                .stream()
+                .map(this::mapToParentTaskDTO)
+                .collect(Collectors.toList());
+    }
+
+    public ParentTaskDTO getParentTaskById(Long parentId) {
+        ParentTask parentTask = parentTaskRepository.findById(parentId)
+                .orElseThrow(
+                        () -> new EntityNotFoundException("Parent task with id " + parentId + " not found")
+                );
+
+        return mapToParentTaskDTO(parentTask);
+    }
+
     private ParentTaskDTO mapToParentTaskDTO(ParentTask parentTask) {
         ParentTaskDTO parentTaskDTO = new ParentTaskDTO();
+        parentTaskDTO.setParentId(parentTask.getParentId());
         parentTaskDTO.setDescription(parentTask.getDescription());
         parentTaskDTO.setDeadline(parentTask.getDeadline());
         parentTaskDTO.setPriority(parentTask.getPriority());
