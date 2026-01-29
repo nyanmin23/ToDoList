@@ -24,7 +24,7 @@ public class SectionController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdSection);
     }
 
-    @PutMapping("/{sectionId")
+    @PutMapping("/{sectionId}")
     public ResponseEntity<SectionDTO> updateSection(
             @PathVariable Long sectionId,
             @RequestBody SectionDTO sectionDTO
