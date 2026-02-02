@@ -5,24 +5,19 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.Instant;
-
 @Getter
 @Setter
 @NoArgsConstructor
 @Entity
 @Table(name = "child_tasks")
-public class ChildTask extends AbstractTask {
+public class ChildTask extends BaseTaskEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long childId;
 
-    @Column(name = "description", nullable = false)
-    private String description;
-
-    @Column(name = "deadline")
-    private Instant deadline;
+    @Column(name = "child_task_title", nullable = false)
+    private String childTaskTitle;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id", nullable = false)
