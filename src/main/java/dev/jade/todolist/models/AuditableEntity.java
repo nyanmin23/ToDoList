@@ -15,7 +15,7 @@ public abstract class AuditableEntity {
     @Column(name = "created_at", insertable = false, nullable = false, updatable = false)
     private Instant createdAt;
 
-    @Column(name = "updated_at", insertable = false, nullable = false, updatable = false)
+    @Column(name = "updated_at", insertable = false, nullable = false)
     private Instant updatedAt;
 
 }

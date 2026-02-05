@@ -1,8 +1,7 @@
 package dev.jade.todolist.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,12 +9,10 @@ import lombok.Setter;
 @Getter
 public class UserRequest {
 
-    @NotNull
-    @NotEmpty
+    @NotBlank(message = "Email is required")
     private String email;
 
-    @NotNull
-    @NotEmpty
+    @NotBlank(message = "Username is required")
     private String username;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)

@@ -29,7 +29,7 @@ public class ParentTaskController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ParentTaskResponse>> displayAllParentTasksByUser(
+    public ResponseEntity<List<ParentTaskResponse>> displayAllParentTasksBySection(
             @PathVariable Long sectionId
     ) {
         List<ParentTaskResponse> allParentTasks = parentTaskService.getAllParentTasksBySection(sectionId);
@@ -48,7 +48,7 @@ public class ParentTaskController {
     }
 
     @DeleteMapping("/{parentTaskId}")
-    public ResponseEntity<ParentTaskResponse> deleteSection(
+    public ResponseEntity<ParentTaskResponse> deleteParentTask(
             @PathVariable Long parentTaskId
     ) {
         ParentTaskResponse deletedParentTask = parentTaskService.deleteParentTask(parentTaskId);

@@ -16,5 +16,8 @@ public class ChildTaskResponse {
     private Priority priority;
     private boolean isCompleted;
     private Integer displayOrder;
+    private Instant createdAt;
+    private Instant updatedAt;
+    private Instant completedAt;
 
 }

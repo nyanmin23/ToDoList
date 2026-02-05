@@ -43,15 +43,15 @@ public class ParentTaskService {
             throw new EntityNotFoundException("Section not found");
         }
 
-        return parentTaskRepository.findAllBySection_SectionId(sectionId)
+        return parentTaskRepository.findBySection_SectionIdOrderByDisplayOrder(sectionId)
                 .stream()
                 .map(this::toParentTaskResponse)
                 .collect(Collectors.toList());
     }
 
     @Transactional
-    public ParentTaskResponse updateParentTask(Long sectionId, ParentTaskRequest parentTaskRequest) {
-        ParentTask updatedParentTask = parentTaskRepository.findById(sectionId)
+    public ParentTaskResponse updateParentTask(Long parentTaskId, ParentTaskRequest parentTaskRequest) {
+        ParentTask updatedParentTask = parentTaskRepository.findByParentTaskId(parentTaskId)
                 .orElseThrow(() -> new EntityNotFoundException("Parent Task not found"));
 
         updatedParentTask.setParentTaskTitle(parentTaskRequest.getParentTaskTitle());
@@ -74,7 +74,6 @@ public class ParentTaskService {
         return parentTaskResponse;
     }
 
-
     private ParentTaskResponse toParentTaskResponse(ParentTask parentTask) {
         ParentTaskResponse parentTaskResponse = new ParentTaskResponse();
 
@@ -84,6 +83,9 @@ public class ParentTaskService {
         parentTaskResponse.setPriority(parentTask.getPriority());
         parentTaskResponse.setCompleted(parentTask.isCompleted());
         parentTaskResponse.setDisplayOrder(parentTask.getDisplayOrder());
+        parentTaskResponse.setCreatedAt(parentTask.getCreatedAt());
+        parentTaskResponse.setUpdatedAt(parentTask.getUpdatedAt());
+        parentTaskResponse.setCompletedAt(parentTask.getCompletedAt());
 
         return parentTaskResponse;
     }

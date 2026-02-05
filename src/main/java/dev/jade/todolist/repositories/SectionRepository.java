@@ -13,7 +13,7 @@ public interface SectionRepository extends JpaRepository<Section, Long> {
     Optional<Section> findBySectionId(Long sectionId);
 
     //    @EntityGraph(attributePaths = {"parentTasks", "parentTasks.childTasks"})
-    List<Section> findAllByUser_UserId(Long userId);
+    List<Section> findByUser_UserIdOrderByDisplayOrder(Long userId);
 
     boolean existsBySectionId(Long sectionId);
 }

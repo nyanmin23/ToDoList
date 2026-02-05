@@ -1,6 +1,6 @@
 package dev.jade.todolist.dto.request;
 
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,11 +9,10 @@ import lombok.Setter;
 @Setter
 public class SectionRequest {
 
-    @NotNull(message = "Section name is required")
-    @NotEmpty(message = "Section name cannot be empty")
+    @NotBlank(message = "Name is required")
     private String sectionName;
 
-    @NotNull
+    @NotNull(message = "Display order is required")
     private Integer displayOrder;
 
 }
