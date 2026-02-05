@@ -1,4 +1,4 @@
-package dev.jade.todolist.dto;
+package dev.jade.todolist.dto.request;
 
 import dev.jade.todolist.models.Priority;
 import jakarta.validation.constraints.NotEmpty;
@@ -10,20 +10,19 @@ import java.time.Instant;
 
 @Getter
 @Setter
-public class ChildTaskDTO {
+public class ChildTaskRequest {
 
-    @NotNull
-    @NotEmpty
-    private String description;
+    @NotNull(message = "Description is required")
+    @NotEmpty(message = "Description cannot be empty")
+    private String childTaskTitle;
 
     private Instant deadline;
 
-    @NotNull
-    @NotEmpty
     private Priority priority;
 
-    @NotNull
-    @NotEmpty
     private boolean isCompleted;
+
+    @NotNull
+    private Integer displayOrder;
 
 }

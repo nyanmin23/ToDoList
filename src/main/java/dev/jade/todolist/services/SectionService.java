@@ -1,6 +1,7 @@
 package dev.jade.todolist.services;
 
-import dev.jade.todolist.dto.SectionDTO;
+import dev.jade.todolist.dto.request.SectionRequest;
+import dev.jade.todolist.dto.response.SectionResponse;
 import dev.jade.todolist.exceptions.EntityNotFoundException;
 import dev.jade.todolist.models.Section;
 import dev.jade.todolist.models.User;
@@ -21,49 +22,67 @@ public class SectionService {
     private final UserRepository userRepository;
 
     @Transactional
-    public SectionDTO createSection(Long userId, SectionDTO sectionDTO) {
+    public SectionResponse createSection(Long userId, SectionRequest sectionRequest) {
+
+        // TODO: Replace with helper func() that checks if USER exists
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
-        Section section = new Section();
-        section.setSectionName(sectionDTO.getSectionName());
-        section.setUser(user);
+        Section createdSection = new Section();
+        createdSection.setSectionName(sectionRequest.getSectionName());
+        createdSection.setDisplayOrder(sectionRequest.getDisplayOrder());
+        createdSection.setUser(user);
 
-        return mapToSectionDTO(sectionRepository.save(section));
+        return toSectionResponse(sectionRepository.save(createdSection));
     }
 
     @Transactional(readOnly = true)
-    public List<SectionDTO> getAllSectionsByUserId(Long userId) {
+    public List<SectionResponse> getAllSectionsByUser(Long userId) {
+
+        // TODO: Replace with helper func() that checks if USER exists
         if (!userRepository.existsById(userId)) {
             throw new EntityNotFoundException("User not found");
         }
 
         return sectionRepository.findAllByUser_UserId(userId)
                 .stream()
-                .map(this::mapToSectionDTO)
+                .map(this::toSectionResponse)
                 .collect(Collectors.toList());
     }
 
-    @Transactional(readOnly = true)
-    public SectionDTO getSectionById(Long sectionId) {
-        Section section = sectionRepository.findBySectionId(sectionId)
+    @Transactional
+    public SectionResponse updateSection(Long sectionId, SectionRequest sectionRequest) {
+
+        Section updatedSection = sectionRepository.findBySectionId(sectionId)
                 .orElseThrow(() -> new EntityNotFoundException("Section not found"));
 
-        return mapToSectionDTO(section);
+        updatedSection.setSectionName(sectionRequest.getSectionName());
+        updatedSection.setDisplayOrder(sectionRequest.getDisplayOrder());
+
+        return toSectionResponse(sectionRepository.save(updatedSection));
+    }
+
+    private SectionResponse toSectionResponse(Section section) {
+
+        SectionResponse sectionResponse = new SectionResponse();
+
+        sectionResponse.setSectionId(section.getSectionId());
+        sectionResponse.setSectionName(section.getSectionName());
+        sectionResponse.setDisplayOrder(section.getDisplayOrder());
+
+        return sectionResponse;
     }
 
     @Transactional
-    public SectionDTO updateSection(Long sectionId, SectionDTO sectionDTO) {
+    public SectionResponse deleteSection(Long sectionId) {
+
         Section section = sectionRepository.findBySectionId(sectionId)
                 .orElseThrow(() -> new EntityNotFoundException("Section not found"));
 
-        section.setSectionName(sectionDTO.getSectionName());
-        return mapToSectionDTO(sectionRepository.save(section));
-    }
+        SectionResponse deletedSectionResponse = toSectionResponse(section);
 
-    private SectionDTO mapToSectionDTO(Section section) {
-        SectionDTO dto = new SectionDTO();
-        dto.setSectionName(section.getSectionName());
-        return dto;
+        sectionRepository.delete(section);
+
+        return deletedSectionResponse;
     }
 }

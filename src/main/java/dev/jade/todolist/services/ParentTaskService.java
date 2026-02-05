@@ -1,6 +1,7 @@
 package dev.jade.todolist.services;
 
-import dev.jade.todolist.dto.ParentTaskDTO;
+import dev.jade.todolist.dto.request.ParentTaskRequest;
+import dev.jade.todolist.dto.response.ParentTaskResponse;
 import dev.jade.todolist.exceptions.EntityNotFoundException;
 import dev.jade.todolist.models.ParentTask;
 import dev.jade.todolist.models.Section;
@@ -8,6 +9,7 @@ import dev.jade.todolist.repositories.ParentTaskRepository;
 import dev.jade.todolist.repositories.SectionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,72 +21,70 @@ public class ParentTaskService {
     private final ParentTaskRepository parentTaskRepository;
     private final SectionRepository sectionRepository;
 
-    public ParentTaskDTO createParentTask(
-            Long sectionId,
-            ParentTaskDTO parentTaskDTO
-    ) {
+    @Transactional
+    public ParentTaskResponse createParentTask(Long sectionId, ParentTaskRequest parentTaskRequest) {
         Section section = sectionRepository.findBySectionId(sectionId)
-                .orElseThrow(
-                        () -> new EntityNotFoundException("Section with id " + sectionId + " not found")
-                );
+                .orElseThrow(() -> new EntityNotFoundException("Section not found"));
 
-        ParentTask parentTask = new ParentTask();
-        parentTask.setDescription(parentTaskDTO.getDescription());
-        parentTask.setDeadline(parentTaskDTO.getDeadline());
-        parentTask.setPriority(parentTaskDTO.getPriority());
-        parentTask.setCompleted(parentTaskDTO.isCompleted());
-        parentTask.setSection(section);
+        ParentTask createdParentTask = new ParentTask();
+        createdParentTask.setParentTaskTitle(parentTaskRequest.getParentTaskTitle());
+        createdParentTask.setDeadline(parentTaskRequest.getDeadline());
+        createdParentTask.setPriority(parentTaskRequest.getPriority());
+        createdParentTask.setCompleted(parentTaskRequest.isCompleted());
+        createdParentTask.setDisplayOrder(parentTaskRequest.getDisplayOrder());
+        createdParentTask.setSection(section);
 
-        return mapToParentTaskDTO(parentTaskRepository.save(parentTask));
+        return toParentTaskResponse(parentTaskRepository.save(createdParentTask));
     }
 
-    public List<ParentTaskDTO> getAllParentTasksBySection(Long sectionId) {
-        sectionRepository.findBySectionId(sectionId)
-                .orElseThrow(
-                        () -> new EntityNotFoundException("Section with id " + sectionId + " not found")
-                );
+    @Transactional(readOnly = true)
+    public List<ParentTaskResponse> getAllParentTasksBySection(Long sectionId) {
+        if (!sectionRepository.existsBySectionId(sectionId)) {
+            throw new EntityNotFoundException("Section not found");
+        }
 
         return parentTaskRepository.findAllBySection_SectionId(sectionId)
                 .stream()
-                .map(this::mapToParentTaskDTO)
+                .map(this::toParentTaskResponse)
                 .collect(Collectors.toList());
     }
 
-    public ParentTaskDTO getParentTaskById(Long parentId) {
-        ParentTask parentTask = parentTaskRepository.findById(parentId)
-                .orElseThrow(
-                        () -> new EntityNotFoundException("Parent task with id " + parentId + " not found")
-                );
+    @Transactional
+    public ParentTaskResponse updateParentTask(Long sectionId, ParentTaskRequest parentTaskRequest) {
+        ParentTask updatedParentTask = parentTaskRepository.findById(sectionId)
+                .orElseThrow(() -> new EntityNotFoundException("Parent Task not found"));
 
-        return mapToParentTaskDTO(parentTask);
+        updatedParentTask.setParentTaskTitle(parentTaskRequest.getParentTaskTitle());
+        updatedParentTask.setDeadline(parentTaskRequest.getDeadline());
+        updatedParentTask.setPriority(parentTaskRequest.getPriority());
+        updatedParentTask.setCompleted(parentTaskRequest.isCompleted());
+        updatedParentTask.setDisplayOrder(parentTaskRequest.getDisplayOrder());
+
+        return toParentTaskResponse(parentTaskRepository.save(updatedParentTask));
     }
 
-    private ParentTaskDTO mapToParentTaskDTO(ParentTask parentTask) {
-        ParentTaskDTO parentTaskDTO = new ParentTaskDTO();
-        parentTaskDTO.setParentId(parentTask.getParentId());
-        parentTaskDTO.setDescription(parentTask.getDescription());
-        parentTaskDTO.setDeadline(parentTask.getDeadline());
-        parentTaskDTO.setPriority(parentTask.getPriority());
-        parentTaskDTO.setCompleted(parentTask.isCompleted());
+    @Transactional
+    public ParentTaskResponse deleteParentTask(Long parentTaskId) {
+        ParentTask parentTask = parentTaskRepository.findById(parentTaskId)
+                .orElseThrow(() -> new EntityNotFoundException("Parent Task not found"));
 
-        return parentTaskDTO;
+        ParentTaskResponse parentTaskResponse = toParentTaskResponse(parentTask);
+        parentTaskRepository.delete(parentTask);
+
+        return parentTaskResponse;
     }
 
-    public ParentTaskDTO updateParentTask(
-            Long parentId,
-            ParentTaskDTO parentTaskDTO
-    ) {
-        ParentTask parentTask = parentTaskRepository.findById(parentId)
-                .orElseThrow(
-                        () -> new EntityNotFoundException("Parent task with id " + parentId + " not found")
-                );
 
-        parentTask.setDescription(parentTaskDTO.getDescription());
-        parentTask.setDeadline(parentTaskDTO.getDeadline());
-        parentTask.setPriority(parentTaskDTO.getPriority());
-        parentTask.setCompleted(parentTaskDTO.isCompleted());
+    private ParentTaskResponse toParentTaskResponse(ParentTask parentTask) {
+        ParentTaskResponse parentTaskResponse = new ParentTaskResponse();
 
-        return mapToParentTaskDTO(parentTaskRepository.save(parentTask));
+        parentTaskResponse.setParentTaskId(parentTask.getParentTaskId());
+        parentTaskResponse.setParentTaskTitle(parentTask.getParentTaskTitle());
+        parentTaskResponse.setDeadline(parentTask.getDeadline());
+        parentTaskResponse.setPriority(parentTask.getPriority());
+        parentTaskResponse.setCompleted(parentTask.isCompleted());
+        parentTaskResponse.setDisplayOrder(parentTask.getDisplayOrder());
+
+        return parentTaskResponse;
     }
-
 }

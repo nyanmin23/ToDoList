@@ -1,7 +1,9 @@
 package dev.jade.todolist.controllers;
 
-import dev.jade.todolist.dto.ParentTaskDTO;
+import dev.jade.todolist.dto.request.ParentTaskRequest;
+import dev.jade.todolist.dto.response.ParentTaskResponse;
 import dev.jade.todolist.services.ParentTaskService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,48 +13,47 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/sections/{sectionId}/parent-tasks")
+@RequestMapping("/api/{userId}/sections/{sectionId}/parent-tasks")
 public class ParentTaskController {
 
     private final ParentTaskService parentTaskService;
 
     @PostMapping
-    public ResponseEntity<ParentTaskDTO> addParentTask(
+    public ResponseEntity<ParentTaskResponse> addNewParentTask(
             @PathVariable Long sectionId,
-            @RequestBody ParentTaskDTO parentTaskDTO
+            @Valid @RequestBody ParentTaskRequest parentTaskRequest
     ) {
-        ParentTaskDTO createdParentTask = parentTaskService.createParentTask(sectionId, parentTaskDTO);
+        ParentTaskResponse newParentTask = parentTaskService.createParentTask(sectionId, parentTaskRequest);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdParentTask);
+        return ResponseEntity.status(HttpStatus.CREATED).body(newParentTask);
     }
 
     @GetMapping
-    public ResponseEntity<List<ParentTaskDTO>> getAllParentTasksBySection(
+    public ResponseEntity<List<ParentTaskResponse>> displayAllParentTasksByUser(
             @PathVariable Long sectionId
     ) {
-        List<ParentTaskDTO> parentTasks = parentTaskService.getAllParentTasksBySection(sectionId);
+        List<ParentTaskResponse> allParentTasks = parentTaskService.getAllParentTasksBySection(sectionId);
 
-        return ResponseEntity.ok(parentTasks);
+        return ResponseEntity.ok(allParentTasks);
     }
 
-    @GetMapping("/{parentId}")
-    public ResponseEntity<ParentTaskDTO> getParentTaskById(
-            @PathVariable Long sectionId,
-            @PathVariable Long parentId
+    @PutMapping("/{parentTaskId}")
+    public ResponseEntity<ParentTaskResponse> updateParentTask(
+            @PathVariable Long parentTaskId,
+            @Valid @RequestBody ParentTaskRequest parentTaskRequest
     ) {
-        ParentTaskDTO parentTask = parentTaskService.getParentTaskById(parentId);
-
-        return ResponseEntity.ok(parentTask);
-    }
-
-    @PutMapping("/{parentId}")
-    public ResponseEntity<ParentTaskDTO> updateParentTask(
-            @PathVariable Long sectionId,
-            @PathVariable Long parentId,
-            @RequestBody ParentTaskDTO parentTaskDTO
-    ) {
-        ParentTaskDTO updatedParentTask = parentTaskService.updateParentTask(parentId, parentTaskDTO);
+        ParentTaskResponse updatedParentTask = parentTaskService.updateParentTask(parentTaskId, parentTaskRequest);
 
         return ResponseEntity.ok(updatedParentTask);
     }
+
+    @DeleteMapping("/{parentTaskId}")
+    public ResponseEntity<ParentTaskResponse> deleteSection(
+            @PathVariable Long parentTaskId
+    ) {
+        ParentTaskResponse deletedParentTask = parentTaskService.deleteParentTask(parentTaskId);
+
+        return ResponseEntity.ok(deletedParentTask);
+    }
+
 }

@@ -1,4 +1,4 @@
-package dev.jade.todolist.dto;
+package dev.jade.todolist.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotEmpty;
@@ -8,7 +8,7 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class UserDTO {
+public class UserRequest {
 
     @NotNull
     @NotEmpty

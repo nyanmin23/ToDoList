@@ -1,6 +1,6 @@
 package dev.jade.todolist.services;
 
-import dev.jade.todolist.dto.UserDTO;
+import dev.jade.todolist.dto.request.UserRequest;
 import dev.jade.todolist.exceptions.UserAlreadyExistsException;
 import dev.jade.todolist.models.User;
 import dev.jade.todolist.repositories.UserRepository;
@@ -15,24 +15,24 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public UserDTO createUser(UserDTO userDTO) {
-        if (userRepository.existsByEmail(userDTO.getEmail())) {
-            throw new UserAlreadyExistsException(userDTO.getEmail());
+    public UserRequest createUser(UserRequest userRequest) {
+        if (userRepository.existsByEmail(userRequest.getEmail())) {
+            throw new UserAlreadyExistsException(userRequest.getEmail());
         }
 
         User user = new User();
-        user.setUsername(userDTO.getUsername());
-        user.setEmail(userDTO.getEmail());
-        user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+        user.setUsername(userRequest.getUsername());
+        user.setEmail(userRequest.getEmail());
+        user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
 
         return mapToUserDTO(userRepository.save(user));
     }
 
-    private UserDTO mapToUserDTO(User user) {
-        UserDTO userDTO = new UserDTO();
-        userDTO.setUsername(user.getUsername());
-        userDTO.setEmail(user.getEmail());
+    private UserRequest mapToUserDTO(User user) {
+        UserRequest userRequest = new UserRequest();
+        userRequest.setUsername(user.getUsername());
+        userRequest.setEmail(user.getEmail());
 
-        return userDTO;
+        return userRequest;
     }
 }

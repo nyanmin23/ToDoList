@@ -5,12 +5,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
 @Entity
 @Table(name = "users")
-public class User extends BaseEntity {
+public class User extends AuditableEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,5 +27,12 @@ public class User extends BaseEntity {
 
     @Column(name = "password", length = 128, nullable = false)
     private String password;
+
+    @OneToMany(mappedBy = "user",
+            cascade = CascadeType.REMOVE,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY)
+    @OrderColumn(name = "display_order")
+    private List<Section> sections = new ArrayList<>();
 
 }
