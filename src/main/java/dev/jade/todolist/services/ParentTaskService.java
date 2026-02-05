@@ -23,7 +23,7 @@ public class ParentTaskService {
 
     @Transactional
     public ParentTaskResponse createParentTask(Long sectionId, ParentTaskRequest parentTaskRequest) {
-        Section section = sectionRepository.findBySectionId(sectionId)
+        Section section = sectionRepository.findById(sectionId)
                 .orElseThrow(() -> new EntityNotFoundException("Section not found"));
 
         ParentTask createdParentTask = new ParentTask();
@@ -51,7 +51,7 @@ public class ParentTaskService {
 
     @Transactional
     public ParentTaskResponse updateParentTask(Long parentTaskId, ParentTaskRequest parentTaskRequest) {
-        ParentTask updatedParentTask = parentTaskRepository.findByParentTaskId(parentTaskId)
+        ParentTask updatedParentTask = parentTaskRepository.findById(parentTaskId)
                 .orElseThrow(() -> new EntityNotFoundException("Parent Task not found"));
 
         updatedParentTask.setParentTaskTitle(parentTaskRequest.getParentTaskTitle());

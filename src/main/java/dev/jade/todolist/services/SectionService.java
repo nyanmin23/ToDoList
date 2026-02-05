@@ -53,7 +53,7 @@ public class SectionService {
     @Transactional
     public SectionResponse updateSection(Long sectionId, SectionRequest sectionRequest) {
 
-        Section updatedSection = sectionRepository.findBySectionId(sectionId)
+        Section updatedSection = sectionRepository.findById(sectionId)
                 .orElseThrow(() -> new EntityNotFoundException("Section not found"));
 
         updatedSection.setSectionName(sectionRequest.getSectionName());
@@ -78,7 +78,7 @@ public class SectionService {
     @Transactional
     public SectionResponse deleteSection(Long sectionId) {
 
-        Section section = sectionRepository.findBySectionId(sectionId)
+        Section section = sectionRepository.findById(sectionId)
                 .orElseThrow(() -> new EntityNotFoundException("Section not found"));
 
         SectionResponse deletedSectionResponse = toSectionResponse(section);

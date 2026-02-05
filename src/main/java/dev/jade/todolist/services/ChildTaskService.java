@@ -39,7 +39,7 @@ public class ChildTaskService {
 
     @Transactional(readOnly = true)
     public List<ChildTaskResponse> getAllChildTasksByParent(Long parentTaskId) {
-        if (!parentTaskRepository.existsByParentId(parentTaskId)) {
+        if (!parentTaskRepository.existsByParentTaskId(parentTaskId)) {
             throw new EntityNotFoundException("Parent task not found");
         }
 
@@ -51,7 +51,7 @@ public class ChildTaskService {
 
     @Transactional
     public ChildTaskResponse updateChildTask(Long childTaskId, ChildTaskRequest childTaskRequest) {
-        ChildTask updatedChildTask = childTaskRepository.findByChildTaskId(childTaskId)
+        ChildTask updatedChildTask = childTaskRepository.findById(childTaskId)
                 .orElseThrow(() -> new EntityNotFoundException("Child task not found"));
 
         updatedChildTask.setChildTaskTitle(childTaskRequest.getChildTaskTitle());
@@ -65,7 +65,7 @@ public class ChildTaskService {
 
     @Transactional
     public ChildTaskResponse deleteChildTask(Long childTaskId) {
-        ChildTask childTask = childTaskRepository.findByChildTaskId(childTaskId)
+        ChildTask childTask = childTaskRepository.findById(childTaskId)
                 .orElseThrow(() -> new EntityNotFoundException("Child task not found"));
 
         ChildTaskResponse childTaskResponse = toChildTaskResponse(childTask);
