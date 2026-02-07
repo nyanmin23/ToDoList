@@ -103,3 +103,6 @@ $$
         EXECUTE FUNCTION update_updated_at_column();
     END
 $$;
+
+ALTER TABLE users
+    ALTER COLUMN password TYPE VARCHAR(255);
