@@ -1,4 +1,4 @@
-package dev.jade.todolist.dto.response;
+package dev.jade.todolist.dtos.responses;
 
 import dev.jade.todolist.models.Priority;
 import lombok.Getter;
@@ -11,13 +11,21 @@ import java.time.Instant;
 public class ParentTaskResponse {
 
     private Long parentTaskId;
+
     private String parentTaskTitle;
+
     private Instant deadline;
+
     private Priority priority;
+
     private boolean isCompleted;
+
     private Integer displayOrder;
+
     private Instant createdAt;
+
     private Instant updatedAt;
+
     private Instant completedAt;
 
 }

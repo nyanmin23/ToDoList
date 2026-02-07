@@ -1,4 +1,4 @@
-package dev.jade.todolist.dto.response;
+package dev.jade.todolist.dtos.responses;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -10,9 +10,13 @@ import java.time.Instant;
 public class SectionResponse {
 
     private Long sectionId;
+
     private String sectionName;
+
     private Integer displayOrder;
+
     private Instant createdAt;
+
     private Instant updatedAt;
 
 }

@@ -1,8 +1,9 @@
 package dev.jade.todolist.services;
 
-import dev.jade.todolist.dto.request.ParentTaskRequest;
-import dev.jade.todolist.dto.response.ParentTaskResponse;
+import dev.jade.todolist.dtos.requests.ParentTaskRequest;
+import dev.jade.todolist.dtos.responses.ParentTaskResponse;
 import dev.jade.todolist.exceptions.EntityNotFoundException;
+import dev.jade.todolist.mapstruct.mappers.ParentTaskMapper;
 import dev.jade.todolist.models.ParentTask;
 import dev.jade.todolist.models.Section;
 import dev.jade.todolist.repositories.ParentTaskRepository;
@@ -20,21 +21,17 @@ public class ParentTaskService {
 
     private final ParentTaskRepository parentTaskRepository;
     private final SectionRepository sectionRepository;
+    private final ParentTaskMapper mapper;
 
     @Transactional
     public ParentTaskResponse createParentTask(Long sectionId, ParentTaskRequest parentTaskRequest) {
         Section section = sectionRepository.findById(sectionId)
                 .orElseThrow(() -> new EntityNotFoundException("Section not found"));
 
-        ParentTask createdParentTask = new ParentTask();
-        createdParentTask.setParentTaskTitle(parentTaskRequest.getParentTaskTitle());
-        createdParentTask.setDeadline(parentTaskRequest.getDeadline());
-        createdParentTask.setPriority(parentTaskRequest.getPriority());
-        createdParentTask.setCompleted(parentTaskRequest.isCompleted());
-        createdParentTask.setDisplayOrder(parentTaskRequest.getDisplayOrder());
+        ParentTask createdParentTask = mapper.toEntity(parentTaskRequest);
         createdParentTask.setSection(section);
 
-        return toParentTaskResponse(parentTaskRepository.save(createdParentTask));
+        return mapper.toResponse(parentTaskRepository.save(createdParentTask));
     }
 
     @Transactional(readOnly = true)
@@ -45,7 +42,7 @@ public class ParentTaskService {
 
         return parentTaskRepository.findBySection_SectionIdOrderByDisplayOrder(sectionId)
                 .stream()
-                .map(this::toParentTaskResponse)
+                .map(mapper::toResponse)
                 .collect(Collectors.toList());
     }
 
@@ -54,39 +51,16 @@ public class ParentTaskService {
         ParentTask updatedParentTask = parentTaskRepository.findById(parentTaskId)
                 .orElseThrow(() -> new EntityNotFoundException("Parent Task not found"));
 
-        updatedParentTask.setParentTaskTitle(parentTaskRequest.getParentTaskTitle());
-        updatedParentTask.setDeadline(parentTaskRequest.getDeadline());
-        updatedParentTask.setPriority(parentTaskRequest.getPriority());
-        updatedParentTask.setCompleted(parentTaskRequest.isCompleted());
-        updatedParentTask.setDisplayOrder(parentTaskRequest.getDisplayOrder());
+        mapper.updateEntityFromRequest(parentTaskRequest, updatedParentTask);
 
-        return toParentTaskResponse(parentTaskRepository.save(updatedParentTask));
+        return mapper.toResponse(parentTaskRepository.save(updatedParentTask));
     }
 
     @Transactional
-    public ParentTaskResponse deleteParentTask(Long parentTaskId) {
+    public void deleteParentTask(Long parentTaskId) {
         ParentTask parentTask = parentTaskRepository.findById(parentTaskId)
                 .orElseThrow(() -> new EntityNotFoundException("Parent Task not found"));
 
-        ParentTaskResponse parentTaskResponse = toParentTaskResponse(parentTask);
         parentTaskRepository.delete(parentTask);
-
-        return parentTaskResponse;
-    }
-
-    private ParentTaskResponse toParentTaskResponse(ParentTask parentTask) {
-        ParentTaskResponse parentTaskResponse = new ParentTaskResponse();
-
-        parentTaskResponse.setParentTaskId(parentTask.getParentTaskId());
-        parentTaskResponse.setParentTaskTitle(parentTask.getParentTaskTitle());
-        parentTaskResponse.setDeadline(parentTask.getDeadline());
-        parentTaskResponse.setPriority(parentTask.getPriority());
-        parentTaskResponse.setCompleted(parentTask.isCompleted());
-        parentTaskResponse.setDisplayOrder(parentTask.getDisplayOrder());
-        parentTaskResponse.setCreatedAt(parentTask.getCreatedAt());
-        parentTaskResponse.setUpdatedAt(parentTask.getUpdatedAt());
-        parentTaskResponse.setCompletedAt(parentTask.getCompletedAt());
-
-        return parentTaskResponse;
     }
 }

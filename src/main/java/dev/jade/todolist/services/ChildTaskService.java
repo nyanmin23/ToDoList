@@ -1,8 +1,9 @@
 package dev.jade.todolist.services;
 
-import dev.jade.todolist.dto.request.ChildTaskRequest;
-import dev.jade.todolist.dto.response.ChildTaskResponse;
+import dev.jade.todolist.dtos.requests.ChildTaskRequest;
+import dev.jade.todolist.dtos.responses.ChildTaskResponse;
 import dev.jade.todolist.exceptions.EntityNotFoundException;
+import dev.jade.todolist.mapstruct.mappers.ChildTaskMapper;
 import dev.jade.todolist.models.ChildTask;
 import dev.jade.todolist.models.ParentTask;
 import dev.jade.todolist.repositories.ChildTaskRepository;
@@ -20,21 +21,17 @@ public class ChildTaskService {
 
     private final ChildTaskRepository childTaskRepository;
     private final ParentTaskRepository parentTaskRepository;
+    private final ChildTaskMapper mapper;
 
     @Transactional
     public ChildTaskResponse createChildTask(Long parentTaskId, ChildTaskRequest childTaskRequest) {
         ParentTask parentTask = parentTaskRepository.findById(parentTaskId)
                 .orElseThrow(() -> new EntityNotFoundException("Parent task not found"));
 
-        ChildTask createdChildTask = new ChildTask();
-        createdChildTask.setChildTaskTitle(childTaskRequest.getChildTaskTitle());
-        createdChildTask.setDeadline(childTaskRequest.getDeadline());
-        createdChildTask.setPriority(childTaskRequest.getPriority());
-        createdChildTask.setCompleted(childTaskRequest.isCompleted());
-        createdChildTask.setDisplayOrder(childTaskRequest.getDisplayOrder());
+        ChildTask createdChildTask = mapper.toEntity(childTaskRequest);
         createdChildTask.setParentTask(parentTask);
 
-        return toChildTaskResponse(childTaskRepository.save(createdChildTask));
+        return mapper.toResponse(childTaskRepository.save(createdChildTask));
     }
 
     @Transactional(readOnly = true)
@@ -45,7 +42,7 @@ public class ChildTaskService {
 
         return childTaskRepository.findByParentTask_ParentTaskIdOrderByDisplayOrder(parentTaskId)
                 .stream()
-                .map(this::toChildTaskResponse)
+                .map(mapper::toResponse)
                 .collect(Collectors.toList());
     }
 
@@ -54,39 +51,16 @@ public class ChildTaskService {
         ChildTask updatedChildTask = childTaskRepository.findById(childTaskId)
                 .orElseThrow(() -> new EntityNotFoundException("Child task not found"));
 
-        updatedChildTask.setChildTaskTitle(childTaskRequest.getChildTaskTitle());
-        updatedChildTask.setDeadline(childTaskRequest.getDeadline());
-        updatedChildTask.setPriority(childTaskRequest.getPriority());
-        updatedChildTask.setCompleted(childTaskRequest.isCompleted());
-        updatedChildTask.setDisplayOrder(childTaskRequest.getDisplayOrder());
+        mapper.updateEntityFromRequest(childTaskRequest, updatedChildTask);
 
-        return toChildTaskResponse(childTaskRepository.save(updatedChildTask));
+        return mapper.toResponse(childTaskRepository.save(updatedChildTask));
     }
 
     @Transactional
-    public ChildTaskResponse deleteChildTask(Long childTaskId) {
+    public void deleteChildTask(Long childTaskId) {
         ChildTask childTask = childTaskRepository.findById(childTaskId)
                 .orElseThrow(() -> new EntityNotFoundException("Child task not found"));
 
-        ChildTaskResponse childTaskResponse = toChildTaskResponse(childTask);
         childTaskRepository.delete(childTask);
-
-        return childTaskResponse;
-    }
-
-    private ChildTaskResponse toChildTaskResponse(ChildTask childTask) {
-        ChildTaskResponse childTaskResponse = new ChildTaskResponse();
-
-        childTaskResponse.setChildTaskId(childTask.getChildTaskId());
-        childTaskResponse.setChildTaskTitle(childTask.getChildTaskTitle());
-        childTaskResponse.setDeadline(childTask.getDeadline());
-        childTaskResponse.setPriority(childTask.getPriority());
-        childTaskResponse.setCompleted(childTask.isCompleted());
-        childTaskResponse.setDisplayOrder(childTask.getDisplayOrder());
-        childTaskResponse.setCreatedAt(childTask.getCreatedAt());
-        childTaskResponse.setUpdatedAt(childTask.getUpdatedAt());
-        childTaskResponse.setCompletedAt(childTask.getCompletedAt());
-
-        return childTaskResponse;
     }
 }

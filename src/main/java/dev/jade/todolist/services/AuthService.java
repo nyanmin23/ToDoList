@@ -1,7 +1,9 @@
 package dev.jade.todolist.services;
 
-import dev.jade.todolist.dto.request.UserRequest;
+import dev.jade.todolist.dtos.requests.AuthRequest;
+import dev.jade.todolist.dtos.responses.AuthResponse;
 import dev.jade.todolist.exceptions.UserAlreadyExistsException;
+import dev.jade.todolist.mapstruct.mappers.UserMapper;
 import dev.jade.todolist.models.User;
 import dev.jade.todolist.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,25 +16,15 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UserMapper mapper;
 
-    public UserRequest createUser(UserRequest userRequest) {
-        if (userRepository.existsByEmail(userRequest.getEmail())) {
-            throw new UserAlreadyExistsException(userRequest.getEmail());
-        }
+    public AuthResponse createUser(AuthRequest request) {
+        if (userRepository.existsByEmail(request.getEmail()))
+            throw new UserAlreadyExistsException("Email already exists");
 
-        User user = new User();
-        user.setUsername(userRequest.getUsername());
-        user.setEmail(userRequest.getEmail());
-        user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
+        User createdUser = mapper.toEntity(request);
+        createdUser.setPassword(passwordEncoder.encode(request.getPassword()));
 
-        return mapToUserDTO(userRepository.save(user));
-    }
-
-    private UserRequest mapToUserDTO(User user) {
-        UserRequest userRequest = new UserRequest();
-        userRequest.setUsername(user.getUsername());
-        userRequest.setEmail(user.getEmail());
-
-        return userRequest;
+        return mapper.toResponse(userRepository.save(createdUser));
     }
 }

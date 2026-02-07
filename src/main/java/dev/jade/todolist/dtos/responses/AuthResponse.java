@@ -1,4 +1,4 @@
-package dev.jade.todolist.dto.response;
+package dev.jade.todolist.dtos.responses;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -7,12 +7,16 @@ import java.time.Instant;
 
 @Getter
 @Setter
-public class UserResponse {
+public class AuthResponse {
 
     private Long userId;
+
     private String username;
+
     private String email;
+
     private Instant createdAt;
+
     private Instant updatedAt;
 
 }

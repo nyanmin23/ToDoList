@@ -1,8 +1,9 @@
 package dev.jade.todolist.services;
 
-import dev.jade.todolist.dto.request.SectionRequest;
-import dev.jade.todolist.dto.response.SectionResponse;
+import dev.jade.todolist.dtos.requests.SectionRequest;
+import dev.jade.todolist.dtos.responses.SectionResponse;
 import dev.jade.todolist.exceptions.EntityNotFoundException;
+import dev.jade.todolist.mapstruct.mappers.SectionMapper;
 import dev.jade.todolist.models.Section;
 import dev.jade.todolist.models.User;
 import dev.jade.todolist.repositories.SectionRepository;
@@ -20,6 +21,7 @@ public class SectionService {
 
     private final SectionRepository sectionRepository;
     private final UserRepository userRepository;
+    private final SectionMapper mapper;
 
     @Transactional
     public SectionResponse createSection(Long userId, SectionRequest sectionRequest) {
@@ -28,12 +30,10 @@ public class SectionService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
-        Section createdSection = new Section();
-        createdSection.setSectionName(sectionRequest.getSectionName());
-        createdSection.setDisplayOrder(sectionRequest.getDisplayOrder());
+        Section createdSection = mapper.toEntity(sectionRequest);
         createdSection.setUser(user);
 
-        return toSectionResponse(sectionRepository.save(createdSection));
+        return mapper.toResponse(sectionRepository.save(createdSection));
     }
 
     @Transactional(readOnly = true)
@@ -46,7 +46,7 @@ public class SectionService {
 
         return sectionRepository.findByUser_UserIdOrderByDisplayOrder(userId)
                 .stream()
-                .map(this::toSectionResponse)
+                .map(mapper::toResponse)
                 .collect(Collectors.toList());
     }
 
@@ -56,35 +56,17 @@ public class SectionService {
         Section updatedSection = sectionRepository.findById(sectionId)
                 .orElseThrow(() -> new EntityNotFoundException("Section not found"));
 
-        updatedSection.setSectionName(sectionRequest.getSectionName());
-        updatedSection.setDisplayOrder(sectionRequest.getDisplayOrder());
+        mapper.updateEntityFromRequest(sectionRequest, updatedSection);
 
-        return toSectionResponse(sectionRepository.save(updatedSection));
-    }
-
-    private SectionResponse toSectionResponse(Section section) {
-
-        SectionResponse sectionResponse = new SectionResponse();
-
-        sectionResponse.setSectionId(section.getSectionId());
-        sectionResponse.setSectionName(section.getSectionName());
-        sectionResponse.setDisplayOrder(section.getDisplayOrder());
-        sectionResponse.setCreatedAt(section.getCreatedAt());
-        sectionResponse.setUpdatedAt(section.getUpdatedAt());
-
-        return sectionResponse;
+        return mapper.toResponse(sectionRepository.save(updatedSection));
     }
 
     @Transactional
-    public SectionResponse deleteSection(Long sectionId) {
+    public void deleteSection(Long sectionId) {
 
         Section section = sectionRepository.findById(sectionId)
                 .orElseThrow(() -> new EntityNotFoundException("Section not found"));
 
-        SectionResponse deletedSectionResponse = toSectionResponse(section);
-
         sectionRepository.delete(section);
-
-        return deletedSectionResponse;
     }
 }

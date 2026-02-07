@@ -1,4 +1,4 @@
-package dev.jade.todolist.dto.request;
+package dev.jade.todolist.dtos.requests;
 
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;

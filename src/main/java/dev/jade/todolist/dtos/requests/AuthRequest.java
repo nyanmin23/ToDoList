@@ -1,4 +1,4 @@
-package dev.jade.todolist.dto.request;
+package dev.jade.todolist.dtos.requests;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class UserRequest {
+public class AuthRequest {
 
     @NotBlank(message = "Email is required")
     private String email;

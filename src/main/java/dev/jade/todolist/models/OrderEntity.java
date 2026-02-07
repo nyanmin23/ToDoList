@@ -8,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @MappedSuperclass
-public class OrderEntity extends AuditableEntity {
+public abstract class OrderEntity extends AuditableEntity {
 
     @Column(name = "display_order", nullable = false)
     private Integer displayOrder;
