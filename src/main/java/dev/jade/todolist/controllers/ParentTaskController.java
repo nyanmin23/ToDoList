@@ -1,59 +1,66 @@
 package dev.jade.todolist.controllers;
 
-import dev.jade.todolist.dto.request.ParentTaskRequest;
-import dev.jade.todolist.dto.response.ParentTaskResponse;
+import dev.jade.todolist.dtos.requests.ParentTaskRequest;
+import dev.jade.todolist.dtos.responses.ParentTaskResponse;
+import dev.jade.todolist.security.CustomUserDetails;
 import dev.jade.todolist.services.ParentTaskService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/{userId}/sections/{sectionId}/parent-tasks")
+@RequestMapping("/api/sections/{sectionId}/parent-tasks")
 public class ParentTaskController {
 
     private final ParentTaskService parentTaskService;
 
     @PostMapping
-    public ResponseEntity<ParentTaskResponse> addNewParentTask(
+    public ResponseEntity<ParentTaskResponse> createParentTask(
+            @AuthenticationPrincipal CustomUserDetails currentUser,
             @PathVariable Long sectionId,
-            @Valid @RequestBody ParentTaskRequest parentTaskRequest
+            @Valid @RequestBody ParentTaskRequest request
     ) {
-        ParentTaskResponse newParentTask = parentTaskService.createParentTask(sectionId, parentTaskRequest);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(newParentTask);
+        Long userId = currentUser.getUserId();
+        ParentTaskResponse task = parentTaskService.createParentTask(userId, sectionId, request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(task);
     }
 
     @GetMapping
-    public ResponseEntity<List<ParentTaskResponse>> displayAllParentTasksBySection(
+    public ResponseEntity<List<ParentTaskResponse>> getParentTasks(
+            @AuthenticationPrincipal CustomUserDetails currentUser,
             @PathVariable Long sectionId
     ) {
-        List<ParentTaskResponse> allParentTasks = parentTaskService.getAllParentTasksBySection(sectionId);
-
-        return ResponseEntity.ok(allParentTasks);
+        Long userId = currentUser.getUserId();
+        List<ParentTaskResponse> tasks = parentTaskService.findParentTasksBySection(userId, sectionId);
+        return ResponseEntity.ok(tasks);
     }
 
     @PutMapping("/{parentTaskId}")
     public ResponseEntity<ParentTaskResponse> updateParentTask(
+            @AuthenticationPrincipal CustomUserDetails currentUser,
+            @PathVariable Long sectionId,
             @PathVariable Long parentTaskId,
-            @Valid @RequestBody ParentTaskRequest parentTaskRequest
+            @Valid @RequestBody ParentTaskRequest request
     ) {
-        ParentTaskResponse updatedParentTask = parentTaskService.updateParentTask(parentTaskId, parentTaskRequest);
-
-        return ResponseEntity.ok(updatedParentTask);
+        Long userId = currentUser.getUserId();
+        ParentTaskResponse updated = parentTaskService.updateParentTask(userId, sectionId, parentTaskId, request);
+        return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/{parentTaskId}")
-    public ResponseEntity<ParentTaskResponse> deleteParentTask(
+    public ResponseEntity<Void> deleteParentTask(
+            @AuthenticationPrincipal CustomUserDetails currentUser,
+            @PathVariable Long sectionId,
             @PathVariable Long parentTaskId
     ) {
-        ParentTaskResponse deletedParentTask = parentTaskService.deleteParentTask(parentTaskId);
-
-        return ResponseEntity.ok(deletedParentTask);
+        Long userId = currentUser.getUserId();
+        parentTaskService.deleteParentTask(userId, parentTaskId);
+        return ResponseEntity.noContent().build();
     }
-
 }

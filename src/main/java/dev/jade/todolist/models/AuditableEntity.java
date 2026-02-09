@@ -12,9 +12,11 @@ import java.time.Instant;
 @MappedSuperclass
 public abstract class AuditableEntity {
 
+    //  @CreatedDate
     @Column(name = "created_at", insertable = false, nullable = false, updatable = false)
     private Instant createdAt;
 
+    //  @LastModifiedDate
     @Column(name = "updated_at", insertable = false, nullable = false)
     private Instant updatedAt;
 

@@ -2,8 +2,10 @@ package dev.jade.todolist;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 @SpringBootApplication
+@EnableJpaAuditing
 public class ToDoListApplication {
 
     public static void main(String[] args) {
@@ -13,7 +15,5 @@ public class ToDoListApplication {
 }
 
 /**
- * TODO
- * 1. DBMS like Postgres, MySQL is suitable for storing ToDoList tasks
- *
+ * Must implement Autmatic Display Ordering
  */

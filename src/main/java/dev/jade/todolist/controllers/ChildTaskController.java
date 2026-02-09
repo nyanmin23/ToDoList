@@ -1,58 +1,70 @@
 package dev.jade.todolist.controllers;
 
-import dev.jade.todolist.dto.request.ChildTaskRequest;
-import dev.jade.todolist.dto.response.ChildTaskResponse;
+import dev.jade.todolist.dtos.requests.ChildTaskRequest;
+import dev.jade.todolist.dtos.responses.ChildTaskResponse;
+import dev.jade.todolist.security.CustomUserDetails;
 import dev.jade.todolist.services.ChildTaskService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/{userId}/sections/{sectionId}/parent-tasks/{parentTaskId}/child-tasks")
+@RequestMapping("/api/sections/{sectionId}/parent-tasks/{parentTaskId}/child-tasks")
 public class ChildTaskController {
 
     private final ChildTaskService childTaskService;
 
     @PostMapping
-    public ResponseEntity<ChildTaskResponse> addNewChildTask(
+    public ResponseEntity<ChildTaskResponse> createChildTask(
+            @AuthenticationPrincipal CustomUserDetails currentUser,
+            @PathVariable Long sectionId,
             @PathVariable Long parentTaskId,
-            @Valid @RequestBody ChildTaskRequest childTaskRequest
+            @Valid @RequestBody ChildTaskRequest request
     ) {
-        ChildTaskResponse newChildTask = childTaskService.createChildTask(parentTaskId, childTaskRequest);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(newChildTask);
+        Long userId = currentUser.getUserId();
+        ChildTaskResponse response = childTaskService.createChildTask(userId, sectionId, parentTaskId, request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping
-    public ResponseEntity<List<ChildTaskResponse>> displayAllChildTasksByParent(
+    public ResponseEntity<List<ChildTaskResponse>> getChildTasks(
+            @AuthenticationPrincipal CustomUserDetails currentUser,
+            @PathVariable Long sectionId,
             @PathVariable Long parentTaskId
     ) {
-        List<ChildTaskResponse> allChildTasks = childTaskService.getAllChildTasksByParent(parentTaskId);
-
-        return ResponseEntity.ok(allChildTasks);
+        Long userId = currentUser.getUserId();
+        List<ChildTaskResponse> tasks = childTaskService.findChildTasksByParent(userId, parentTaskId);
+        return ResponseEntity.ok(tasks);
     }
 
     @PutMapping("/{childTaskId}")
     public ResponseEntity<ChildTaskResponse> updateChildTask(
+            @AuthenticationPrincipal CustomUserDetails currentUser,
+            @PathVariable Long sectionId,
+            @PathVariable Long parentTaskId,
             @PathVariable Long childTaskId,
-            @Valid @RequestBody ChildTaskRequest childTaskRequest
+            @Valid @RequestBody ChildTaskRequest request
     ) {
-        ChildTaskResponse updatedChildTask = childTaskService.updateChildTask(childTaskId, childTaskRequest);
-
-        return ResponseEntity.ok(updatedChildTask);
+        Long userId = currentUser.getUserId();
+        ChildTaskResponse updated = childTaskService.updateChildTask(userId, sectionId, parentTaskId, childTaskId, request);
+        return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/{childTaskId}")
     public ResponseEntity<ChildTaskResponse> deleteChildTask(
+            @AuthenticationPrincipal CustomUserDetails currentUser,
+            @PathVariable Long sectionId,
+            @PathVariable Long parentTaskId,
             @PathVariable Long childTaskId
     ) {
-        ChildTaskResponse deletedChildTask = childTaskService.deleteChildTask(childTaskId);
-
-        return ResponseEntity.ok(deletedChildTask);
+        Long userId = currentUser.getUserId();
+        childTaskService.deleteChildTask(userId, childTaskId);
+        return ResponseEntity.noContent().build();
     }
 }

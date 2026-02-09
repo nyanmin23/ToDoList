@@ -24,43 +24,58 @@ public class ParentTaskService {
     private final ParentTaskMapper mapper;
 
     @Transactional
-    public ParentTaskResponse createParentTask(Long sectionId, ParentTaskRequest parentTaskRequest) {
-        Section section = sectionRepository.findById(sectionId)
+    public ParentTaskResponse createParentTask(
+            Long userId,
+            Long sectionId,
+            ParentTaskRequest request) {
+
+        Section section = sectionRepository
+                .findByIdAndUserId(sectionId, userId)
                 .orElseThrow(() -> new EntityNotFoundException("Section not found"));
 
-        ParentTask createdParentTask = mapper.toEntity(parentTaskRequest);
+        ParentTask createdParentTask = mapper.toEntity(request);
         createdParentTask.setSection(section);
-
         return mapper.toResponse(parentTaskRepository.save(createdParentTask));
     }
 
     @Transactional(readOnly = true)
-    public List<ParentTaskResponse> getAllParentTasksBySection(Long sectionId) {
-        if (!sectionRepository.existsBySectionId(sectionId)) {
+    public List<ParentTaskResponse> findParentTasksBySection(
+            Long userId,
+            Long sectionId) {
+        if (!sectionRepository.existsByIdAndUserId(sectionId, userId))
             throw new EntityNotFoundException("Section not found");
-        }
 
-        return parentTaskRepository.findBySection_SectionIdOrderByDisplayOrder(sectionId)
+        return parentTaskRepository
+                .findBySection_SectionIdOrderByDisplayOrder(sectionId)
                 .stream()
                 .map(mapper::toResponse)
                 .collect(Collectors.toList());
     }
 
     @Transactional
-    public ParentTaskResponse updateParentTask(Long parentTaskId, ParentTaskRequest parentTaskRequest) {
-        ParentTask updatedParentTask = parentTaskRepository.findById(parentTaskId)
-                .orElseThrow(() -> new EntityNotFoundException("Parent Task not found"));
+    public ParentTaskResponse updateParentTask(
+            Long userId,
+            Long sectionId,
+            Long parentTaskId,
+            ParentTaskRequest request) {
 
-        mapper.updateEntityFromRequest(parentTaskRequest, updatedParentTask);
+        ParentTask updatedParentTask = parentTaskRepository
+                .findByIdAndUserId(parentTaskId, userId)
+                .orElseThrow(() -> new EntityNotFoundException("Section not found"));
 
+        mapper.updateEntityFromRequest(request, updatedParentTask);
         return mapper.toResponse(parentTaskRepository.save(updatedParentTask));
     }
 
     @Transactional
-    public void deleteParentTask(Long parentTaskId) {
-        ParentTask parentTask = parentTaskRepository.findById(parentTaskId)
-                .orElseThrow(() -> new EntityNotFoundException("Parent Task not found"));
+    public void deleteParentTask(
+            Long userId,
+            Long parentTaskId) {
 
-        parentTaskRepository.delete(parentTask);
+        ParentTask deletedParentTask = parentTaskRepository
+                .findByIdAndUserId(parentTaskId, userId)
+                .orElseThrow(() -> new EntityNotFoundException("Section not found"));
+
+        parentTaskRepository.delete(deletedParentTask);
     }
 }

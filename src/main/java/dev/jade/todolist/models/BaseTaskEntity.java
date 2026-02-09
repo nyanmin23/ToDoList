@@ -1,9 +1,6 @@
 package dev.jade.todolist.models;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -27,4 +24,13 @@ public abstract class BaseTaskEntity extends OrderEntity {
     @Column(name = "completed_at")
     private Instant completedAt;
 
+    @PreUpdate
+    @PrePersist
+    protected void onUpdate() {
+        if (this.isCompleted && this.completedAt == null) {
+            this.completedAt = Instant.now();
+        } else if (!this.isCompleted) {
+            this.completedAt = null;
+        }
+    }
 }

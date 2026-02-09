@@ -1,6 +1,7 @@
 package dev.jade.todolist.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -22,17 +23,18 @@ public class User extends AuditableEntity {
     @Column(name = "username", length = 50, nullable = false)
     private String username;
 
-    @Column(name = "email", nullable = false)
+    @Email(message = "Email must be valid")
+    @Column(name = "email", unique = true, nullable = false)
     private String email;
 
-    @Column(name = "password", length = 128, nullable = false)
+    @Column(name = "password", nullable = false)
     private String password;
 
     @OneToMany(mappedBy = "user",
             cascade = CascadeType.REMOVE,
             orphanRemoval = true,
             fetch = FetchType.LAZY)
-    @OrderColumn(name = "display_order")
+    @OrderBy("displayOrder ASC")
     private List<Section> sections = new ArrayList<>();
 
 }

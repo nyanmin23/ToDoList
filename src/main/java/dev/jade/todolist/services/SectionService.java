@@ -19,54 +19,62 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class SectionService {
 
+    // TODO: implement .orElseThrow() for repository methods later
+
     private final SectionRepository sectionRepository;
     private final UserRepository userRepository;
     private final SectionMapper mapper;
 
     @Transactional
-    public SectionResponse createSection(Long userId, SectionRequest sectionRequest) {
+    public SectionResponse createSection(
+            Long userId,
+            SectionRequest request) {
 
-        // TODO: Replace with helper func() that checks if USER exists
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+        User user = userRepository
+                .findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Section not found"));
 
-        Section createdSection = mapper.toEntity(sectionRequest);
+        Section createdSection = mapper.toEntity(request);
         createdSection.setUser(user);
-
         return mapper.toResponse(sectionRepository.save(createdSection));
     }
 
     @Transactional(readOnly = true)
-    public List<SectionResponse> getAllSectionsByUser(Long userId) {
+    public List<SectionResponse> findSectionsByUser(Long userId) {
 
-        // TODO: Replace with helper func() that checks if USER exists
-        if (!userRepository.existsById(userId)) {
+        if (!userRepository.existsById(userId))
             throw new EntityNotFoundException("User not found");
-        }
 
-        return sectionRepository.findByUser_UserIdOrderByDisplayOrder(userId)
+        return sectionRepository
+                .findByUser_UserIdOrderByDisplayOrder(userId)
                 .stream()
                 .map(mapper::toResponse)
                 .collect(Collectors.toList());
     }
 
     @Transactional
-    public SectionResponse updateSection(Long sectionId, SectionRequest sectionRequest) {
+    public SectionResponse updateSection(
+            Long userId,
+            Long sectionId,
+            SectionRequest request) {
 
-        Section updatedSection = sectionRepository.findById(sectionId)
+        Section updatedSection = sectionRepository
+                .findByIdAndUserId(sectionId, userId)
                 .orElseThrow(() -> new EntityNotFoundException("Section not found"));
 
-        mapper.updateEntityFromRequest(sectionRequest, updatedSection);
-
+        mapper.updateEntityFromRequest(request, updatedSection);
         return mapper.toResponse(sectionRepository.save(updatedSection));
     }
 
     @Transactional
-    public void deleteSection(Long sectionId) {
+    public void deleteSection(
+            Long userId,
+            Long sectionId) {
 
-        Section section = sectionRepository.findById(sectionId)
+        Section deletedSection = sectionRepository
+                .findByIdAndUserId(sectionId, userId)
                 .orElseThrow(() -> new EntityNotFoundException("Section not found"));
 
-        sectionRepository.delete(section);
+        sectionRepository.delete(deletedSection);
     }
 }

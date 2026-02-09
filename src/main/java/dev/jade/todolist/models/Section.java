@@ -30,7 +30,7 @@ public class Section extends OrderEntity {
             cascade = CascadeType.REMOVE,
             orphanRemoval = true,
             fetch = FetchType.LAZY)
-    @OrderColumn(name = "display_order")
+    @OrderBy("displayOrder ASC")
     private List<ParentTask> parentTasks = new ArrayList<>();
 
 }
