@@ -29,9 +29,9 @@ public class AuthController {
             @Valid @RequestBody AuthRequest request,
             HttpServletRequest httpRequest
     ) {
+
         authService.registerUser(request);
         AuthResponse response = authService.loginUser(request, httpRequest);
-
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 

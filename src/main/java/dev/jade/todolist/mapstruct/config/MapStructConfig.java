@@ -1,4 +1,4 @@
-package dev.jade.todolist.mapstruct.configs;
+package dev.jade.todolist.mapstruct.config;
 
 import org.mapstruct.MapperConfig;
 import org.mapstruct.MappingConstants;
