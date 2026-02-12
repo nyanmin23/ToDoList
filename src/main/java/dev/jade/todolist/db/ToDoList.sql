@@ -115,3 +115,12 @@ ALTER TABLE parent_tasks
 
 ALTER TABLE child_tasks
     DROP COLUMN display_order;
+
+ALTER TABLE sections
+    ADD COLUMN rank VARCHAR(50);
+
+ALTER TABLE parent_tasks
+    ADD COLUMN rank VARCHAR(50);
+
+ALTER TABLE child_tasks
+    ADD COLUMN rank VARCHAR(50);
