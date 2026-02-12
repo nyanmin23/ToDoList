@@ -1,7 +1,7 @@
 package dev.jade.todolist.security;
 
-import dev.jade.todolist.models.User;
-import dev.jade.todolist.repositories.UserRepository;
+import dev.jade.todolist.user.entity.User;
+import dev.jade.todolist.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -20,6 +20,6 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .orElseThrow(() ->
                         new UsernameNotFoundException("User not found with email: " + email));
 
-        return CustomUserDetails.build(user);
+        return CustomUserDetails.from(user);
     }
 }

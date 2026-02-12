@@ -15,5 +15,7 @@ public class ToDoListApplication {
 }
 
 /**
- * Must implement Autmatic Display Ordering
+ * Must implement Autmatic Display Ordering (LexoRank Alogrithm)
+ * Must implement REST API pagination and possibly sorting
+ * Finish implementing GlobalEceptionHandlers
  */

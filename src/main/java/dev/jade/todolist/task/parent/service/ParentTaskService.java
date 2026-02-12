@@ -1,0 +1,80 @@
+package dev.jade.todolist.task.parent.service;
+
+import dev.jade.todolist.models.dtos.requests.ParentTaskRequest;
+import dev.jade.todolist.models.dtos.responses.ParentTaskResponse;
+import dev.jade.todolist.repositories.ParentTaskRepository;
+import dev.jade.todolist.section.entity.Section;
+import dev.jade.todolist.section.repository.SectionRepository;
+import dev.jade.todolist.task.parent.entity.ParentTask;
+import dev.jade.todolist.task.parent.mapper.ParentTaskMapper;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor
+public class ParentTaskService {
+
+    private final ParentTaskRepository parentTaskRepository;
+    private final SectionRepository sectionRepository;
+    private final ParentTaskMapper mapper;
+
+    @Transactional
+    public ParentTaskResponse createParentTask(
+            Long userId,
+            Long sectionId,
+            ParentTaskRequest request) {
+
+        Section section = sectionRepository
+                .findByIdAndUserId(sectionId, userId)
+                .orElseThrow(() -> new EntityNotFoundException("Section not found"));
+
+        ParentTask createdParentTask = mapper.toEntity(request);
+        createdParentTask.setSection(section);
+        return mapper.toResponse(parentTaskRepository.save(createdParentTask));
+    }
+
+    @Transactional(readOnly = true)
+    public List<ParentTaskResponse> findParentTasksBySection(
+            Long userId,
+            Long sectionId) {
+        if (!sectionRepository.existsByIdAndUserId(sectionId, userId))
+            throw new EntityNotFoundException("Section not found");
+
+        return parentTaskRepository
+                .findBySection_SectionIdOrderByDisplayOrder(sectionId)
+                .stream()
+                .map(mapper::toResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public ParentTaskResponse updateParentTask(
+            Long userId,
+            Long sectionId,
+            Long parentTaskId,
+            ParentTaskRequest request) {
+
+        ParentTask updatedParentTask = parentTaskRepository
+                .findByIdAndUserId(parentTaskId, userId)
+                .orElseThrow(() -> new EntityNotFoundException("Section not found"));
+
+        mapper.updateEntityFromRequest(request, updatedParentTask);
+        return mapper.toResponse(parentTaskRepository.save(updatedParentTask));
+    }
+
+    @Transactional
+    public void deleteParentTask(
+            Long userId,
+            Long parentTaskId) {
+
+        ParentTask deletedParentTask = parentTaskRepository
+                .findByIdAndUserId(parentTaskId, userId)
+                .orElseThrow(() -> new EntityNotFoundException("Section not found"));
+
+        parentTaskRepository.delete(deletedParentTask);
+    }
+}

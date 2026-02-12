@@ -1,6 +1,9 @@
 package dev.jade.todolist.security;
 
-import dev.jade.todolist.models.User;
+import dev.jade.todolist.user.entity.User;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -10,6 +13,8 @@ import java.util.Collection;
 import java.util.List;
 
 @Getter
+@Builder
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class CustomUserDetails implements UserDetails {
 
     private final Long userId;
@@ -17,99 +22,37 @@ public class CustomUserDetails implements UserDetails {
     private final String password;
     private final Collection<? extends GrantedAuthority> authorities;
 
-    // Account status flags - make these configurable if you need them later
-    private final boolean enabled;
-    private final boolean accountNonExpired;
-    private final boolean accountNonLocked;
-    private final boolean credentialsNonExpired;
+    @Builder.Default
+    private final boolean enabled = true;
+
+    @Builder.Default
+    private final boolean accountNonExpired = true;
+
+    @Builder.Default
+    private final boolean accountNonLocked = true;
+
+    @Builder.Default
+    private final boolean credentialsNonExpired = true;
 
     /**
-     * Private constructor - forces use of factory method
+     * Domain → Security transformation
+     * This is the ONLY supported creation path.
      */
-    private CustomUserDetails(
-            Long userId,
-            String email,
-            String password,
-            Collection<? extends GrantedAuthority> authorities,
-            boolean enabled,
-            boolean accountNonExpired,
-            boolean accountNonLocked,
-            boolean credentialsNonExpired) {
-        this.userId = userId;
-        this.email = email;
-        this.password = password;
-        this.authorities = authorities;
-        this.enabled = enabled;
-        this.accountNonExpired = accountNonExpired;
-        this.accountNonLocked = accountNonLocked;
-        this.credentialsNonExpired = credentialsNonExpired;
-    }
-
-    /**
-     * Factory method to build CustomUserDetails from User entity.
-     * <p>
-     * This is the ONLY way to create a CustomUserDetails instance.
-     * It encapsulates the logic of converting domain User to authentication User.
-     *
-     * @param user The domain User entity from database
-     * @return CustomUserDetails ready for Spring Security
-     */
-    public static CustomUserDetails build(User user) {
-        // Build authorities from user roles
-        // If you don't have roles yet, this is where you'll add them later
+    public static CustomUserDetails from(User user) {
         List<GrantedAuthority> authorities = List.of(
                 new SimpleGrantedAuthority("ROLE_USER")
         );
 
-        // Future: When you add roles table
-        // List<GrantedAuthority> authorities = user.getRoles().stream()
-        //         .map(role -> new SimpleGrantedAuthority(role.getName()))
-        //         .collect(Collectors.toList());
-
-        return new CustomUserDetails(
-                user.getUserId(),
-                user.getEmail(),
-                user.getPassword(),
-                authorities,
-                true,  // enabled - you can add this to User entity later
-                true,  // accountNonExpired
-                true,  // accountNonLocked
-                true   // credentialsNonExpired
-        );
-    }
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return authorities;
-    }
-
-    @Override
-    public String getPassword() {
-        return password;
+        return CustomUserDetails.builder()
+                .userId(user.getUserId())
+                .email(user.getEmail())
+                .password(user.getPassword())
+                .authorities(authorities)
+                .build();
     }
 
     @Override
     public String getUsername() {
-        return email;  // Email IS the username in your system
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return accountNonExpired;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return accountNonLocked;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return credentialsNonExpired;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return enabled;
+        return email; // Email is the username
     }
 }
