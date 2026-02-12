@@ -106,3 +106,12 @@ $$;
 
 ALTER TABLE users
     ALTER COLUMN password TYPE VARCHAR(255);
+
+ALTER TABLE sections
+    DROP COLUMN display_order;
+
+ALTER TABLE parent_tasks
+    DROP COLUMN display_order;
+
+ALTER TABLE child_tasks
+    DROP COLUMN display_order;
