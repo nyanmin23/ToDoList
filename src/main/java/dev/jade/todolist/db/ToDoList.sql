@@ -14,9 +14,7 @@ CREATE TABLE IF NOT EXISTS sections
     section_name  VARCHAR(255)                          NOT NULL,
     created_at    TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at    TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    display_order INTEGER                               NOT NULL,
     user_id       BIGINT                                NOT NULL,
-    CONSTRAINT unique_section_display_order_per_user UNIQUE (user_id, display_order),
     CONSTRAINT sections_user_id_fkey FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE CASCADE
 );
 
@@ -30,10 +28,8 @@ CREATE TABLE IF NOT EXISTS parent_tasks
     completed_at      TIMESTAMPTZ DEFAULT NULL,
     created_at        TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at        TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    display_order     INTEGER                               NOT NULL,
     section_id        BIGINT                                NOT NULL,
     CONSTRAINT check_parent_priority CHECK (priority IN ('LOW', 'MEDIUM', 'HIGH')),
-    CONSTRAINT unique_parent_display_order_per_section UNIQUE (section_id, display_order),
     CONSTRAINT parent_tasks_section_id_fkey FOREIGN KEY (section_id) REFERENCES sections (section_id) ON DELETE CASCADE
 );
 
@@ -47,10 +43,8 @@ CREATE TABLE IF NOT EXISTS child_tasks
     completed_at     TIMESTAMPTZ DEFAULT NULL,
     created_at       TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at       TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    display_order    INTEGER                               NOT NULL,
     parent_task_id   BIGINT                                NOT NULL,
     CONSTRAINT check_child_priority CHECK (priority IN ('LOW', 'MEDIUM', 'HIGH')),
-    CONSTRAINT unique_child_display_order_per_parent UNIQUE (parent_task_id, display_order),
     CONSTRAINT child_tasks_parent_task_id_fkey FOREIGN KEY (parent_task_id) REFERENCES parent_tasks (parent_task_id) ON DELETE CASCADE
 );
 
@@ -106,3 +100,9 @@ $$;
 
 ALTER TABLE users
     ALTER COLUMN password TYPE VARCHAR(255);
+
+-- Reset index numbering
+ALTER SEQUENCE child_tasks_child_task_id_seq RESTART WITH 1;
+ALTER SEQUENCE parent_tasks_parent_task_id_seq RESTART WITH 1;
+ALTER SEQUENCE sections_section_id_seq RESTART WITH 1;
+ALTER SEQUENCE users_user_id_seq RESTART WITH 1;

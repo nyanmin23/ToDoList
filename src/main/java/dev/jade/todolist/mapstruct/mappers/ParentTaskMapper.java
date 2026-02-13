@@ -2,7 +2,7 @@ package dev.jade.todolist.mapstruct.mappers;
 
 import dev.jade.todolist.dtos.requests.ParentTaskRequest;
 import dev.jade.todolist.dtos.responses.ParentTaskResponse;
-import dev.jade.todolist.mapstruct.config.MapStructConfig;
+import dev.jade.todolist.mapstruct.configs.MapStructConfig;
 import dev.jade.todolist.models.ParentTask;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

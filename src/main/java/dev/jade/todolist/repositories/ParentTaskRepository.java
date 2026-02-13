@@ -12,7 +12,7 @@ import java.util.Optional;
 @Repository
 public interface ParentTaskRepository extends JpaRepository<ParentTask, Long> {
 
-    List<ParentTask> findBySection_SectionIdOrderByDisplayOrder(Long sectionId);
+    List<ParentTask> findBySection_SectionIdOrderByCreatedAt(Long sectionId);
 
     @Query("""
                 SELECT pt FROM ParentTask pt

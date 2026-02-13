@@ -9,7 +9,7 @@ import java.time.Instant;
 @Getter
 @Setter
 @MappedSuperclass
-public abstract class BaseTaskEntity extends OrderEntity {
+public abstract class BaseTaskEntity extends AuditableEntity {
 
     @Column(name = "deadline")
     private Instant deadline;

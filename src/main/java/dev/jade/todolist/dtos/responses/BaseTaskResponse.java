@@ -16,8 +16,6 @@ public abstract class BaseTaskResponse {
 
     private boolean isCompleted;
 
-    private Integer displayOrder;
-
     private Instant createdAt;
 
     private Instant updatedAt;

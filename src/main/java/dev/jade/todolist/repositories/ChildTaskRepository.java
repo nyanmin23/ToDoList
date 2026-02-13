@@ -12,7 +12,7 @@ import java.util.Optional;
 @Repository
 public interface ChildTaskRepository extends JpaRepository<ChildTask, Long> {
 
-    List<ChildTask> findByParentTask_ParentTaskIdOrderByDisplayOrder(Long parentTaskId);
+    List<ChildTask> findByParentTask_ParentTaskIdOrderByCreatedAt(Long parentTaskId);
 
     @Query("""
                 SELECT ct FROM ChildTask ct

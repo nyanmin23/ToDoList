@@ -30,7 +30,7 @@ public class ParentTask extends BaseTaskEntity {
             cascade = CascadeType.REMOVE,
             orphanRemoval = true,
             fetch = FetchType.LAZY)
-    @OrderBy("displayOrder ASC")
+    @OrderBy("createdAt ASC")
     private List<ChildTask> childTasks = new ArrayList<>();
 
 }

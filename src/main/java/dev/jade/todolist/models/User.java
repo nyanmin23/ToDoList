@@ -34,7 +34,7 @@ public class User extends AuditableEntity {
             cascade = CascadeType.REMOVE,
             orphanRemoval = true,
             fetch = FetchType.LAZY)
-    @OrderBy("displayOrder ASC")
+    @OrderBy("createdAt ASC")
     private List<Section> sections = new ArrayList<>();
 
 }

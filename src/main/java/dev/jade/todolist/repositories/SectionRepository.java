@@ -12,7 +12,7 @@ import java.util.Optional;
 @Repository
 public interface SectionRepository extends JpaRepository<Section, Long> {
 
-    List<Section> findByUser_UserIdOrderByDisplayOrder(Long userId);
+    List<Section> findByUser_UserIdOrderByCreatedAt(Long userId);
 
     @Query("""
                 SELECT s FROM Section s

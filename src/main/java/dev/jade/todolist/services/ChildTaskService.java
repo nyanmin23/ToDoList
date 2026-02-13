@@ -48,7 +48,7 @@ public class ChildTaskService {
             throw new EntityNotFoundException("Task not found");
 
         return childTaskRepository
-                .findByParentTask_ParentTaskIdOrderByDisplayOrder(parentTaskId)
+                .findByParentTask_ParentTaskIdOrderByCreatedAt(parentTaskId)
                 .stream()
                 .map(mapper::toResponse)
                 .collect(Collectors.toList());

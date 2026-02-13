@@ -46,7 +46,7 @@ public class SectionService {
             throw new EntityNotFoundException("User not found");
 
         return sectionRepository
-                .findByUser_UserIdOrderByDisplayOrder(userId)
+                .findByUser_UserIdOrderByCreatedAt(userId)
                 .stream()
                 .map(mapper::toResponse)
                 .collect(Collectors.toList());

@@ -46,7 +46,7 @@ public class ParentTaskService {
             throw new EntityNotFoundException("Section not found");
 
         return parentTaskRepository
-                .findBySection_SectionIdOrderByDisplayOrder(sectionId)
+                .findBySection_SectionIdOrderByCreatedAt(sectionId)
                 .stream()
                 .map(mapper::toResponse)
                 .collect(Collectors.toList());

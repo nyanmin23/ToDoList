@@ -13,8 +13,6 @@ public class SectionResponse {
 
     private String sectionName;
 
-    private Integer displayOrder;
-
     private Instant createdAt;
 
     private Instant updatedAt;
