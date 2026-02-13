@@ -10,11 +10,11 @@ CREATE TABLE IF NOT EXISTS users
 
 CREATE TABLE IF NOT EXISTS sections
 (
-    section_id    BIGSERIAL PRIMARY KEY,
-    section_name  VARCHAR(255)                          NOT NULL,
-    created_at    TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    updated_at    TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    user_id       BIGINT                                NOT NULL,
+    section_id   BIGSERIAL PRIMARY KEY,
+    section_name VARCHAR(255)                          NOT NULL,
+    created_at   TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at   TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    user_id      BIGINT                                NOT NULL,
     CONSTRAINT sections_user_id_fkey FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE CASCADE
 );
 
@@ -97,9 +97,6 @@ $$
         EXECUTE FUNCTION update_updated_at_column();
     END
 $$;
-
-ALTER TABLE users
-    ALTER COLUMN password TYPE VARCHAR(255);
 
 -- Reset index numbering
 ALTER SEQUENCE child_tasks_child_task_id_seq RESTART WITH 1;
