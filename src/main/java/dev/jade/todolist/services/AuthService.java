@@ -1,6 +1,7 @@
 package dev.jade.todolist.services;
 
 import dev.jade.todolist.dtos.requests.AuthRequest;
+import dev.jade.todolist.dtos.requests.LoginRequest;
 import dev.jade.todolist.dtos.responses.AuthResponse;
 import dev.jade.todolist.exceptions.EntityNotFoundException;
 import dev.jade.todolist.exceptions.UserAlreadyExistsException;
@@ -41,7 +42,7 @@ public class AuthService {
     }
 
     @Transactional(readOnly = true)
-    public AuthResponse loginUser(AuthRequest request, HttpServletRequest httpRequest) {
+    public AuthResponse loginUser(LoginRequest request, HttpServletRequest httpRequest) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.email(),
@@ -55,6 +56,10 @@ public class AuthService {
                 .orElseThrow(() -> new EntityNotFoundException("User", "email", request.email()));
 
         return mapper.toResponse(user);
+    }
+
+    public AuthResponse loginUser(AuthRequest request, HttpServletRequest httpRequest) {
+        return loginUser(new LoginRequest(request.email(), request.password()), httpRequest);
     }
 
     public void establishSession(Authentication authentication, HttpServletRequest httpRequest) {

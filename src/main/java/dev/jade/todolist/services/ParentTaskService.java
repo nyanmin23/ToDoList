@@ -31,7 +31,7 @@ public class ParentTaskService {
 
         Section section = sectionRepository
                 .findByIdAndUserId(sectionId, userId)
-                .orElseThrow(() -> new EntityNotFoundException("Section not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Section", "id", sectionId));
 
         ParentTask createdParentTask = mapper.toEntity(request);
         createdParentTask.setSection(section);
@@ -43,7 +43,7 @@ public class ParentTaskService {
             Long userId,
             Long sectionId) {
         if (!sectionRepository.existsByIdAndUserId(sectionId, userId))
-            throw new EntityNotFoundException("Section not found");
+            throw new EntityNotFoundException("Section", "id", sectionId);
 
         return parentTaskRepository
                 .findBySection_SectionIdOrderByCreatedAt(sectionId)
@@ -61,7 +61,7 @@ public class ParentTaskService {
 
         ParentTask updatedParentTask = parentTaskRepository
                 .findByIdAndUserId(parentTaskId, userId)
-                .orElseThrow(() -> new EntityNotFoundException("Section not found"));
+                .orElseThrow(() -> new EntityNotFoundException("ParentTask", "id", parentTaskId));
 
         mapper.updateEntityFromRequest(request, updatedParentTask);
         return mapper.toResponse(parentTaskRepository.save(updatedParentTask));
@@ -74,7 +74,7 @@ public class ParentTaskService {
 
         ParentTask deletedParentTask = parentTaskRepository
                 .findByIdAndUserId(parentTaskId, userId)
-                .orElseThrow(() -> new EntityNotFoundException("Section not found"));
+                .orElseThrow(() -> new EntityNotFoundException("ParentTask", "id", parentTaskId));
 
         parentTaskRepository.delete(deletedParentTask);
     }

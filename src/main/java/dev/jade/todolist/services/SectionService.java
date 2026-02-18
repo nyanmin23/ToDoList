@@ -19,8 +19,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class SectionService {
 
-    // TODO: implement .orElseThrow() for repository methods later
-
     private final SectionRepository sectionRepository;
     private final UserRepository userRepository;
     private final SectionMapper mapper;
@@ -32,7 +30,7 @@ public class SectionService {
 
         User user = userRepository
                 .findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("Section not found"));
+                .orElseThrow(() -> new EntityNotFoundException("User", "id", userId));
 
         Section createdSection = mapper.toEntity(request);
         createdSection.setUser(user);
@@ -43,7 +41,7 @@ public class SectionService {
     public List<SectionResponse> findSectionsByUser(Long userId) {
 
         if (!userRepository.existsById(userId))
-            throw new EntityNotFoundException("User not found");
+            throw new EntityNotFoundException("User", "id", userId);
 
         return sectionRepository
                 .findByUser_UserIdOrderByCreatedAt(userId)
@@ -60,7 +58,7 @@ public class SectionService {
 
         Section updatedSection = sectionRepository
                 .findByIdAndUserId(sectionId, userId)
-                .orElseThrow(() -> new EntityNotFoundException("Section not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Section", "id", sectionId));
 
         mapper.updateEntityFromRequest(request, updatedSection);
         return mapper.toResponse(sectionRepository.save(updatedSection));
@@ -73,7 +71,7 @@ public class SectionService {
 
         Section deletedSection = sectionRepository
                 .findByIdAndUserId(sectionId, userId)
-                .orElseThrow(() -> new EntityNotFoundException("Section not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Section", "id", sectionId));
 
         sectionRepository.delete(deletedSection);
     }

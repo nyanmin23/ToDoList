@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ChildTaskResponse {
+public class ChildTaskResponse extends BaseTaskResponse {
 
     private Long childTaskId;
 

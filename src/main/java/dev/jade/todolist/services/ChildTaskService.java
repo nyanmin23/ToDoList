@@ -32,7 +32,7 @@ public class ChildTaskService {
 
         ParentTask parentTask = parentTaskRepository
                 .findByIdAndUserId(parentTaskId, userId)
-                .orElseThrow(() -> new EntityNotFoundException("Task not found"));
+                .orElseThrow(() -> new EntityNotFoundException("ParentTask", "id", parentTaskId));
 
         ChildTask createdChildTask = mapper.toEntity(request);
         createdChildTask.setParentTask(parentTask);
@@ -45,7 +45,7 @@ public class ChildTaskService {
             Long parentTaskId) {
 
         if (!parentTaskRepository.existsByIdAndUserId(parentTaskId, userId))
-            throw new EntityNotFoundException("Task not found");
+            throw new EntityNotFoundException("ParentTask", "id", parentTaskId);
 
         return childTaskRepository
                 .findByParentTask_ParentTaskIdOrderByCreatedAt(parentTaskId)
@@ -64,7 +64,7 @@ public class ChildTaskService {
 
         ChildTask updatedChildTask = childTaskRepository
                 .findByIdAndParentIdAndUserId(childTaskId, parentTaskId, userId)
-                .orElseThrow(() -> new EntityNotFoundException("Task not found"));
+                .orElseThrow(() -> new EntityNotFoundException("ChildTask", "id", childTaskId));
 
         mapper.updateEntityFromRequest(request, updatedChildTask);
         return mapper.toResponse(childTaskRepository.save(updatedChildTask));
@@ -74,8 +74,7 @@ public class ChildTaskService {
     public void deleteChildTask(Long userId, Long childTaskId) {
         ChildTask task = childTaskRepository
                 .findByIdAndUserId(childTaskId, userId)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        "Child task not found or access denied"));
+                .orElseThrow(() -> new EntityNotFoundException("ChildTask", "id", childTaskId));
 
         childTaskRepository.delete(task);
     }

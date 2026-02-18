@@ -1,6 +1,7 @@
 package dev.jade.todolist.controllers;
 
 import dev.jade.todolist.dtos.requests.AuthRequest;
+import dev.jade.todolist.dtos.requests.LoginRequest;
 import dev.jade.todolist.dtos.responses.AuthResponse;
 import dev.jade.todolist.services.AuthService;
 import jakarta.servlet.http.Cookie;
@@ -37,7 +38,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(
-            @Valid @RequestBody AuthRequest request,
+            @Valid @RequestBody LoginRequest request,
             HttpServletRequest httpRequest) {
 
         AuthResponse response = authService.loginUser(request, httpRequest);
