@@ -6,9 +6,9 @@ export const apiErrorSchema = z.object({
   timestamp: z.string(),
   status: z.number(),
   error: z.string(),
-  code: z.string().nullable(),
+  code: z.string().nullable().optional(),
   message: z.string(),
-  details: z.record(z.string()).nullable(),
+  details: z.record(z.string()).nullable().optional(),
   path: z.string()
 });
 
@@ -35,8 +35,8 @@ export const parentTaskResponseSchema = z
     priority: prioritySchema.nullable(),
     isCompleted: z.boolean().optional(),
     completed: z.boolean().optional(),
-    createdAt: z.string(),
-    updatedAt: z.string(),
+    createdAt: z.string().nullable(),
+    updatedAt: z.string().nullable(),
     completedAt: z.string().nullable()
   })
   .transform((data) => ({
@@ -58,8 +58,8 @@ export const childTaskResponseSchema = z
     priority: prioritySchema.nullable(),
     isCompleted: z.boolean().optional(),
     completed: z.boolean().optional(),
-    createdAt: z.string(),
-    updatedAt: z.string(),
+    createdAt: z.string().nullable(),
+    updatedAt: z.string().nullable(),
     completedAt: z.string().nullable()
   })
   .transform((data) => ({
@@ -68,9 +68,9 @@ export const childTaskResponseSchema = z
     deadline: data.deadline,
     priority: data.priority,
     isCompleted: data.isCompleted ?? data.completed ?? false,
-    createdAt: data.createdAt,
-    updatedAt: data.updatedAt,
-    completedAt: data.completedAt
+    createdAt: data.createdAt ?? null,
+    updatedAt: data.updatedAt ?? null,
+    completedAt: data.completedAt ?? null
   }));
 
 export const registerPayloadSchema = z.object({

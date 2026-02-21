@@ -42,8 +42,8 @@ export interface ChildTaskResponse {
   deadline: string | null;
   priority: Priority | null;
   isCompleted: boolean;
-  createdAt: string;
-  updatedAt: string;
+  createdAt: string | null;
+  updatedAt: string | null;
   completedAt: string | null;
 }
 

@@ -70,13 +70,17 @@ function normalizeError(error: unknown): AppApiError {
       return new AppApiError(
         parsed.data.message,
         parsed.data.status,
-        parsed.data.code,
-        parsed.data.details,
+        parsed.data.code ?? null,
+        parsed.data.details ?? null,
         parsed.data.path
       );
     }
 
-    return new AppApiError(axiosError.message || "Network error", status, null, null, "");
+    const message =
+      !axiosError.response && (axiosError.message === "Network Error" || !axiosError.message)
+        ? "Unable to reach server. Check that the backend is running and reachable."
+        : axiosError.message || "Network error";
+    return new AppApiError(message, status, null, null, "");
   }
 
   return new AppApiError("Unknown error", 500, null, null, "");

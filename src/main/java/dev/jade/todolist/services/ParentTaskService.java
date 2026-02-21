@@ -8,6 +8,7 @@ import dev.jade.todolist.models.ParentTask;
 import dev.jade.todolist.models.Section;
 import dev.jade.todolist.repositories.ParentTaskRepository;
 import dev.jade.todolist.repositories.SectionRepository;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +23,7 @@ public class ParentTaskService {
     private final ParentTaskRepository parentTaskRepository;
     private final SectionRepository sectionRepository;
     private final ParentTaskMapper mapper;
+    private final EntityManager entityManager;
 
     @Transactional
     public ParentTaskResponse createParentTask(
@@ -35,7 +37,9 @@ public class ParentTaskService {
 
         ParentTask createdParentTask = mapper.toEntity(request);
         createdParentTask.setSection(section);
-        return mapper.toResponse(parentTaskRepository.save(createdParentTask));
+        ParentTask saved = parentTaskRepository.save(createdParentTask);
+        entityManager.refresh(saved);
+        return mapper.toResponse(saved);
     }
 
     @Transactional(readOnly = true)

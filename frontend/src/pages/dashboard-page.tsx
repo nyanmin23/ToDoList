@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Navigate } from "react-router-dom";
-import { z } from "zod";
+import { z, ZodError } from "zod";
 import { ErrorMessage } from "@/components/error-message";
 import { RequestStateChip } from "@/components/request-state-chip";
 import { TopNav } from "@/components/top-nav";
@@ -68,6 +68,9 @@ function formatDateLabel(iso: string | null): string {
 function normalizeError(error: unknown): string {
   if (error instanceof AppApiError) {
     return error.message;
+  }
+  if (error instanceof ZodError) {
+    return "Invalid response from server";
   }
   return "Unexpected request failure";
 }
